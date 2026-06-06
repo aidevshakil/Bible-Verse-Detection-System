@@ -1,0 +1,218 @@
+[
+  {
+    "translation_id": "685d1470fe4d5c3b-01",
+    "translation": "ASVBT",
+    "translation_full_form": "American Standard Version (Byzantine Text with Apocrypha)",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "bba9f40183526463-01",
+    "translation": "BSB",
+    "translation_full_form": "Berean Standard Bible",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "6bab4d6c61b31b80-01",
+    "translation": "LXXup",
+    "translation_full_form": "Brenton English Septuagint (Updated Spelling and Formatting)",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "65bfdebd704a8324-01",
+    "translation": "Brenton",
+    "translation_full_form": "Brenton English translation of the Septuagint",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "55212e3cf5d04d49-01",
+    "translation": "KJVCPB",
+    "translation_full_form": "Cambridge Paragraph Bible of the KJV",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "179568874c45066f-01",
+    "translation": "DRA",
+    "translation_full_form": "Douay-Rheims American 1899",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "55ec700d9e0d77ea-01",
+    "translation": "EMTV",
+    "translation_full_form": "English Majority Text Version",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "65eec8e0b60e656b-01",
+    "translation": "FBV",
+    "translation_full_form": "Free Bible Version",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "c315fa9f71d4af3a-01",
+    "translation": "GNV",
+    "translation_full_form": "Geneva Bible",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "bf8f1c7f3f9045a5-01",
+    "translation": "OJPS",
+    "translation_full_form": "JPS TaNaKH 1917",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "de4e12af7f28f599-01",
+    "translation": "KJV",
+    "translation_full_form": "King James (Authorised) Version",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "de4e12af7f28f599-02",
+    "translation": "KJV",
+    "translation_full_form": "King James (Authorised) Version",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "01b29f4b342acc35-01",
+    "translation": "LSV",
+    "translation_full_form": "Literal Standard Version",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "40072c4a5aba4022-01",
+    "translation": "RV",
+    "translation_full_form": "Revised Version 1885",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "ec290b5045ff54a5-01",
+    "translation": "OKE",
+    "translation_full_form": "Targum Onkelos Etheridge",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "2f0fd81d7b85b923-01",
+    "translation": "F35",
+    "translation_full_form": "The English New Testament According to Family 35",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "06125adad2d5898a-01",
+    "translation": "ASV",
+    "translation_full_form": "The Holy Bible, American Standard Version",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "c89622d31b60c444-02",
+    "translation": "TOJB2011",
+    "translation_full_form": "The Orthodox Jewish Bible",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "32339cf2f720ff8e-01",
+    "translation": "TCENT",
+    "translation_full_form": "The Text-Critical English New Testament",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "66c22495370cdfc0-01",
+    "translation": "T4T",
+    "translation_full_form": "Translation for Translators",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "9879dbb7cfe39e4d-01",
+    "translation": "WEB",
+    "translation_full_form": "World English Bible",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "9879dbb7cfe39e4d-02",
+    "translation": "WEB",
+    "translation_full_form": "World English Bible",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "9879dbb7cfe39e4d-03",
+    "translation": "WEB",
+    "translation_full_form": "World English Bible",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "9879dbb7cfe39e4d-04",
+    "translation": "WEB",
+    "translation_full_form": "World English Bible",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "7142879509583d59-01",
+    "translation": "WEBBE",
+    "translation_full_form": "World English Bible British Edition",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "7142879509583d59-02",
+    "translation": "WEBBE",
+    "translation_full_form": "World English Bible British Edition",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "7142879509583d59-03",
+    "translation": "WEBBE",
+    "translation_full_form": "World English Bible British Edition",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "7142879509583d59-04",
+    "translation": "WEBBE",
+    "translation_full_form": "World English Bible British Edition",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "72f4e6dc683324df-01",
+    "translation": "WEBU",
+    "translation_full_form": "World English Bible Updated",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "72f4e6dc683324df-02",
+    "translation": "WEBU",
+    "translation_full_form": "World English Bible Updated",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "72f4e6dc683324df-03",
+    "translation": "WEBU",
+    "translation_full_form": "World English Bible Updated",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "32664dc3288a28df-01",
+    "translation": "WEBUS",
+    "translation_full_form": "World English Bible, American English Edition, without Strong's Numbers",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "32664dc3288a28df-02",
+    "translation": "WEBUS",
+    "translation_full_form": "World English Bible, American English Edition, without Strong's Numbers",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "32664dc3288a28df-03",
+    "translation": "WEBUS",
+    "translation_full_form": "World English Bible, American English Edition, without Strong's Numbers",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "f72b840c855f362c-04",
+    "translation": "WMB",
+    "translation_full_form": "World Messianic Bible",
+    "language_name": "English"
+  },
+  {
+    "translation_id": "04da588535d2f823-04",
+    "translation": "WMBBE",
+    "translation_full_form": "World Messianic Bible British Edition",
+    "language_name": "English"
+  }
+]

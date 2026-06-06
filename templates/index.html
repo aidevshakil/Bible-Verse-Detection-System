@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InstantVerse</title>
+  <style>
+    body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+    header { background: #343a40; color: white; padding: 1rem; text-align: center; width: 100%; position: relative; }
+    .gear-btn { position: absolute; right: 1rem; top: 1rem; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+    .main { flex: 1; display: flex; flex-direction: column; }
+    .container {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 1rem;
+  gap: 1rem;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+    .left, .right, .sidebar { min-width: 300px; padding: 1rem; background: #fff; border-radius: 8px; }
+    .left, .right { flex: 1; }
+    .sidebar { width: 250px; background: #f1f1f1; }
+    #transcript, #verse-output { background: white; padding: 1.25rem; border-radius: 8px; min-height: 100px; margin-bottom: 1rem; border: 1px solid #ddd; font-size: 1.1rem; line-height: 1.6; white-space: pre-wrap; }
+    button {
+      padding: 0.6rem 1.2rem;
+      margin: 0.3rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      background-color: #f0f0f0;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    button:hover {
+      background-color: #e2e2e2;
+    }
+    .history-item { font-size: 0.9rem; margin-bottom: 0.5rem; padding: 0.5rem; background: #eef; border-radius: 4px; }
+    #settings-panel { display: none; padding: 1rem; background: #fff; border-top: 2px solid #ccc; }
+  
+    body.dark-mode {
+      background: #121212;
+      color: #f5f5f5;
+    }
+    body.dark-mode header {
+      background: #1e1e1e;
+    }
+    body.dark-mode .left,
+    body.dark-mode .right,
+    body.dark-mode .sidebar,
+    body.dark-mode #settings-panel {
+      background: #2a2a2a;
+      color: #f5f5f5;
+    }
+    body.dark-mode #transcript,
+    body.dark-mode #verse-output {
+      background: #1e1e1e;
+      color: #f5f5f5;
+      border-color: #444;
+    }
+    body.dark-mode button {
+      background-color: #444;
+      color: #fff;
+    }
+    body.dark-mode button:hover {
+      background-color: #666;
+    }
+    body.dark-mode .history-item {
+      background: #3a3a3a;
+      color: #f5f5f5;
+    }
+    
+.tab-section {
+  margin-top: 1rem;
+}
+
+</style>
+</head>
+<body>
+  <div class="main">
+    <header>
+      <h1>Operator Panel</h1>
+      <button class="gear-btn" onclick="toggleSettings()">⚙️</button>
+    </header>
+
+    <div class="container">
+      <div class="left">
+        <h2>Live Transcript</h2>
+        <div id="transcript">Waiting for voice input...</div>
+        <button onclick="startListening()">Start Listening</button>
+        <button onclick="stopListening()">Stop Listening</button>
+        <button onclick="openProjectorWindow()">Open Projector</button>
+        <button onclick="openLowerThirdWindow()">Open Lower Third</button>
+      </div>
+
+      <div class="right">
+        <h2>Detected Verse</h2>
+        <div id="verse-details"></div>
+        <div id="verse-output">Verse text will appear here...</div>
+        
+<div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+  <div>
+    <button onclick="previousVerse()">Previous</button>
+    <button onclick="nextVerse()">Next</button>
+  </div>
+  <div style="display: flex; align-items: center;">
+    <label for="bibleVersion" style="margin-right: 0.5rem;">Version:</label> <select id="bibleVersion" onchange="refetchCurrentVerse()">
+      <option value="kjv">KJV</option>
+      <option value="web">WEB</option>
+      <option value="asv">ASV</option>
+    </select>
+  </div>
+</div>
+
+        
+    <button onclick="sendToOutputs()">Display Verse</button>
+    <button onclick="bookmarkVerse()">Bookmark</button>
+    <!-- <button onclick="showUserInputState()">Debug Info</button> -->
+    
+        <button onclick="clearDisplay()">Clear Display</button>
+    <button onclick="playVerse()">🔊 Play</button><br>
+        <label><input type="checkbox" id="toggleLowerThird" checked> Enable Lower Third</label>
+        <label><input type="checkbox" id="toggleAutoProject" checked> Auto-Display</label>
+      </div>
+
+      <div class="sidebar">
+        
+    <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
+      <button id="historyTab" onclick="showTab('history')" style="flex:1">History</button>
+      <button id="bookmarkTab" onclick="showTab('bookmarks')" style="flex:1">Bookmarks</button>
+    </div>
+    <div id="verse-history" class="tab-section"></div>
+    <div id="bookmarked-verses" class="tab-section" style="display:none;"></div>
+    
+      </div>
+    </div>
+
+    <div id="settings-panel">
+      <div>
+        <label for="dark-mode-toggle">Dark Mode:</label>
+        <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()" />
+      </div>
+      <h3>Settings</h3>
+      <div>
+        <label for="screen-select">Default Projection Screen:</label>
+        <select id="screen-select"></select>
+      </div>
+      <div>
+        <label for="mic-select">Microphone:</label>
+        <select id="mic-select"></select>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const transcriptEl = document.getElementById('transcript');
+    const verseOutputEl = document.getElementById('verse-output');
+    const toggleLowerThirdEl = document.getElementById('toggleLowerThird');
+    const toggleAutoProjectEl = document.getElementById('toggleAutoProject');
+    const verseHistoryEl = document.getElementById('verse-history');
+    const screenSelect = document.getElementById('screen-select');
+    const micSelect = document.getElementById('mic-select');
+    let currentVerse = '';
+    let recognition = null;
+    let projectorWindow = null;
+    let lowerThirdWindow = null;
+    let verseHistory = [];
+    let currentRef = '';
+    let bookmarks = [];
+
+    // Helper function to format verse reference consistently
+    function formatVerseReference(data) {
+        if (!data || !data.book || !data.chapter || !data.verse) {
+            return null;
+        }
+        return `${data.book} ${data.chapter}:${data.verse}`;
+    }
+
+    // Helper function to create a more detailed history entry
+    function createHistoryEntry(data) {
+        const ref = formatVerseReference(data);
+        if (!ref) return null;
+        
+        const translation = data.translation ? ` (${data.translation.toUpperCase()})` : '';
+        return `${ref}${translation}`;
+    }
+
+    // Helper function to update UI elements
+    function updateVerseDisplay(content, reference = null) {
+        verseOutputEl.textContent = content || 'No verse content found';
+        if (reference) {
+            currentRef = reference;
+        }
+    }
+
+
+    // Helper function to safely add to history
+    function addToHistory(entry) {
+        if (entry && !verseHistory.includes(entry)) {
+            verseHistory.push(entry);
+            updateHistory();
+        }
+    }
+
+    // Helper function to focus projector window
+    function focusProjectorWindow() {
+        if (projectorWindow && !projectorWindow.closed) {
+            projectorWindow.focus();
+        }
+    }
+
+    // Helper function to focus lower third window
+    function focusLowerThirdWindow() {
+        if (lowerThirdWindow && !lowerThirdWindow.closed) {
+            lowerThirdWindow.focus();
+        }
+    }
+
+    // Helper function to check if windows are open
+    function areWindowsOpen() {
+        const projectorOpen = projectorWindow && !projectorWindow.closed;
+        const lowerThirdOpen = lowerThirdWindow && !lowerThirdWindow.closed;
+        return { projectorOpen, lowerThirdOpen };
+    }
+
+    const userInput = {
+          translation: "KJV",       // Example translation
+          book: "",             // Example book
+          chapter: "",             // Example chapter
+          verse: "",              // Example verse
+          text: "" // Will be set when speech is detected
+        };
+
+
+    function previousVerse() {
+      if (!currentRef) {
+        console.warn("No current verse reference to navigate from");
+        return;
+      }
+      
+      const match = currentRef.match(/([a-zA-Z]+)\s(\d{1,3}):(\d{1,3})/);
+      if (match) {
+        const book = match[1];
+        const chapter = parseInt(match[2]);
+        let verse = parseInt(match[3]) - 1;
+
+        if (verse >= 1) {
+          // Update userInput for the previous verse
+          userInput.book = book;
+          userInput.chapter = String(chapter);
+          userInput.verse = String(verse);
+          
+          // Fetch the previous verse and add to history
+          fetchVerse(`${book} ${chapter}:${verse}`, true);
+        } else if (chapter > 1) {
+          // Go to last verse of previous chapter (assuming ~30 verses per chapter)
+          userInput.book = book;
+          userInput.chapter = String(chapter - 1);
+          userInput.verse = "30";
+          
+          fetchVerse(`${book} ${chapter - 1}:30`, true);
+        } else {
+          console.log("Already at the beginning");
+        }
+      }
+    }
+
+    function nextVerse() {
+      if (!currentRef) {
+        console.warn("No current verse reference to navigate from");
+        return;
+      }
+      
+      const match = currentRef.match(/([a-zA-Z]+)\s(\d{1,3}):(\d{1,3})/);
+      if (match) {
+        const book = match[1];
+        const chapter = parseInt(match[2]);
+        const verse = parseInt(match[3]) + 1;
+
+        // Update userInput for the next verse
+        userInput.book = book;
+        userInput.chapter = String(chapter);
+        userInput.verse = String(verse);
+        
+        fetchVerse(`${book} ${chapter}:${verse}`, true);
+      }
+    }
+
+    function updateHistory() {
+      verseHistoryEl.innerHTML = verseHistory.map(v => `<div class='history-item'>${v}</div>`).reverse().join('');
+    }
+
+    function startListening() {
+      if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        alert('Your browser does not support speech recognition.');
+        return;
+      }
+      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.continuous = true;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[event.results.length - 1][0].transcript;
+
+        transcriptEl.textContent = transcript;
+
+        userInput.text = transcript; 
+        
+        fetch("https://bible-verse-detection-system.onrender.com/bible/get-verse/", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userInput),
+          })
+          .then((response) => {
+              return response.json();
+          })
+          .then(data => {
+              updateVerseDisplay(data.content);
+
+              userInput.translation = data.translation ?? userInput.translation;
+              userInput.translation_id = data.translation_id ?? userInput.translation_id;
+              userInput.book = data.book ?? userInput.book;
+              userInput.book_id = data.book_id ?? userInput.book_id;
+              userInput.chapter = data.chapter ?? String(userInput.chapter);
+              userInput.verse = data.verse ?? String(userInput.verse);
+              
+              // Update current verse and reference
+              currentVerse = data.content;
+              currentRef = formatVerseReference(data);
+              //addToHistory(currentRef);
+              verseHistory.push(currentRef);
+              updateHistory();
+              
+              // Only send to outputs if we have valid content (not error messages)
+              if (data.content && !data.content.includes("Error") && !data.content.includes("not found") && !data.content.includes("unavailable")) {
+                  sendToOutputs();
+                  // addToHistory(currentRef);
+              } else {
+                  console.log("Skipping output display due to error or invalid content");
+              }
+              
+          })
+          .catch(error => {
+              const errorMessage = "Error: Unable to fetch verse. Please check your internet connection and try again.";
+              updateVerseDisplay(errorMessage);
+              
+          });
+
+
+
+        const rangeMatch = transcript.match(/([a-zA-Z]+)\s(\d{1,3}):(\d{1,3})\s?[-–]\s?(\d{1,3})/);
+        const singleMatch = transcript.match(/([a-zA-Z]+)\s(\d{1,3}):(\d{1,3})/);
+
+        if (rangeMatch) {
+          const ref = `${rangeMatch[1]} ${rangeMatch[2]}:${rangeMatch[3]}-${rangeMatch[4]}`;
+          fetchVerse(ref, true);
+        } else if (singleMatch) {
+          const ref = `${singleMatch[1]} ${singleMatch[2]}:${singleMatch[3]}`;
+          fetchVerse(ref, true);
+        } else {
+          verseOutputEl.textContent = 'No valid verse detected.';
+        }
+      };
+
+      recognition.onerror = (event) => {
+        
+        // Provide user-friendly error messages
+        let errorMessage = 'Speech recognition error occurred.';
+        switch (event.error) {
+          case 'no-speech':
+            errorMessage = 'No speech detected. Please try speaking again.';
+            break;
+          case 'audio-capture':
+            errorMessage = 'Microphone access denied. Please check your microphone permissions.';
+            break;
+          case 'not-allowed':
+            errorMessage = 'Speech recognition not allowed. Please enable it in your browser settings.';
+            break;
+          case 'network':
+            errorMessage = 'Network error. Please check your internet connection.';
+            break;
+          case 'service-not-allowed':
+            errorMessage = 'Speech recognition service not available.';
+            break;
+        }
+        
+        transcriptEl.textContent = errorMessage;
+      };
+
+      recognition.onend = () => {
+        // Only restart if we're still supposed to be listening
+        if (recognition) {
+          recognition.start();
+        }
+      };
+
+      recognition.start();
+    }
+
+    function stopListening() {
+      if (recognition) {
+        recognition.onend = null;
+        recognition.stop();
+        recognition = null;
+        transcriptEl.textContent = 'Stopped listening.';
+      }
+    }
+
+    function openProjectorWindow() {
+      if (projectorWindow && !projectorWindow.closed) {
+        // If window already exists, just update its content
+        updateProjectorContent();
+      } else {
+        // Create new window
+        projectorWindow = window.open('', 'ProjectorWindow', 'width=800,height=600');
+        if (projectorWindow) {
+          // Wait for window to load before writing content
+          projectorWindow.onload = function() {
+            updateProjectorContent();
+          };
+          // Write initial structure
+          projectorWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <title>Projector Display</title>
+              <style>
+                body {
+                  margin: 0;
+                  padding: 0;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  height: 100vh;
+                  font-size: 2rem;
+                  font-family: Arial, sans-serif;
+                  background: #000;
+                  color: #fff;
+                  text-align: center;
+                }
+                .verse-content {
+                  max-width: 90%;
+                  line-height: 1.4;
+                }
+              </style>
+            </head>
+            <body>
+              <div id="verse-display" class="verse-content">Waiting for verse...</div>
+            </body>
+            </html>
+          `);
+          projectorWindow.document.close();
+        }
+      }
+    }
+
+    function updateProjectorContent() {
+      if (projectorWindow && !projectorWindow.closed) {
+        const displayElement = projectorWindow.document.getElementById('verse-display');
+        if (displayElement) {
+          displayElement.textContent = currentVerse || 'Waiting for verse...';
+        } else {
+          // Fallback if element doesn't exist
+          projectorWindow.document.body.innerHTML = `
+            <div class="verse-content">${currentVerse || 'Waiting for verse...'}</div>
+          `;
+        }
+      }
+    }
+
+    function openLowerThirdWindow() {
+      if (lowerThirdWindow && !lowerThirdWindow.closed) {
+        // If window already exists, just update its content
+        updateLowerThirdContent();
+      } else {
+        // Create new window
+        lowerThirdWindow = window.open('', 'LowerThirdWindow', 'width=800,height=200');
+        if (lowerThirdWindow) {
+          // Wait for window to load before writing content
+          lowerThirdWindow.onload = function() {
+            updateLowerThirdContent();
+          };
+          // Write initial structure
+          lowerThirdWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <title>Lower Third Display</title>
+              <style>
+                body {
+                  margin: 0;
+                  padding: 0;
+                  background: #000;
+                  color: #fff;
+                  font-size: 1.5rem;
+                  font-family: Arial, sans-serif;
+                  text-align: center;
+                  position: fixed;
+                  bottom: 0;
+                  width: 100%;
+                  height: 100%;
+                  display: flex;
+                  align-items: flex-end;
+                  justify-content: center;
+                }
+                .lower-third-content {
+                  background: rgba(0, 0, 0, 0.8);
+                  padding: 1rem;
+                  width: 100%;
+                  box-sizing: border-box;
+                }
+              </style>
+            </head>
+            <body>
+              <div id="lower-third-display" class="lower-third-content">Waiting for verse...</div>
+            </body>
+            </html>
+          `);
+          lowerThirdWindow.document.close();
+        }
+      }
+    }
+
+    function updateLowerThirdContent() {
+      if (lowerThirdWindow && !lowerThirdWindow.closed) {
+        const displayElement = lowerThirdWindow.document.getElementById('lower-third-display');
+        if (displayElement) {
+          if (toggleLowerThirdEl.checked && currentVerse) {
+            displayElement.textContent = currentVerse;
+          } else {
+            displayElement.textContent = '';
+          }
+        } else {
+          // Fallback if element doesn't exist
+          if (toggleLowerThirdEl.checked && currentVerse) {
+            lowerThirdWindow.document.body.innerHTML = `
+              <div class="lower-third-content">${currentVerse}</div>
+            `;
+          } else {
+            lowerThirdWindow.document.body.innerHTML = '';
+          }
+        }
+      }
+    }
+
+    function sendToOutputs() {
+      // Update projector window content
+      updateProjectorContent();
+
+      // Update lower third window content
+      updateLowerThirdContent();
+    }
+
+    function clearDisplay() {
+      // Clear projector window
+      if (projectorWindow && !projectorWindow.closed) {
+        const displayElement = projectorWindow.document.getElementById('verse-display');
+        if (displayElement) {
+          displayElement.textContent = '';
+        } else {
+          projectorWindow.document.body.innerHTML = '';
+        }
+      }
+      
+      // Clear lower third window
+      if (lowerThirdWindow && !lowerThirdWindow.closed) {
+        const displayElement = lowerThirdWindow.document.getElementById('lower-third-display');
+        if (displayElement) {
+          displayElement.textContent = '';
+        } else {
+          lowerThirdWindow.document.body.innerHTML = '';
+        }
+      }
+      
+      // Clear main verse display and details
+      updateVerseDisplay("Verse text will appear here...");
+      const detailsDiv = document.getElementById('verse-details');
+      if (detailsDiv) {
+        detailsDiv.innerHTML = '';
+      }
+    }
+
+    function toggleSettings() {
+      const panel = document.getElementById('settings-panel');
+      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    navigator.mediaDevices.enumerateDevices().then(devices => {
+      const audioInputs = devices.filter(device => device.kind === 'audioinput');
+      audioInputs.forEach(device => {
+        const option = document.createElement('option');
+        option.value = device.deviceId;
+        option.textContent = device.label || `Mic ${micSelect.length + 1}`;
+        micSelect.appendChild(option);
+      });
+    });
+  
+function fetchVerse(ref, addToHistory = true, overrideVersion = null) {
+  const versionSelect = document.getElementById('bibleVersion');
+  const version = overrideVersion || versionSelect?.value || 'kjv';
+  fetch(`https://bible-api.com/${ref}?translation=${version}`)
+    .then(res => res.json())
+    .then(data => {
+      const text = data.text ? `${ref} (${version.toUpperCase()})\n\n${data.text}` : `Verse not found: ${ref}`;
+      verseOutputEl.textContent = text;
+      currentVerse = text;
+      currentRef = ref;
+      if (addToHistory) {
+        verseHistory.push(ref);
+        updateHistory();
+      }
+      if (toggleAutoProjectEl?.checked) {
+        sendToOutputs();
+      }
+    });
+}
+
+function handleTranscript(transcript) {
+  document.getElementById('transcript').textContent = transcript;
+
+  const normalized = transcript.toLowerCase();
+
+  const nextPattern = /\b(next verse|next|go to next)\b/;
+  const prevPattern = /\b(previous verse|previous|go to previous)\b/;
+
+  if (nextPattern.test(normalized)) {
+    nextVerse();
+    return;
+  }
+  if (prevPattern.test(normalized)) {
+    previousVerse();
+    return;
+  }
+
+const commandPhrases = [
+    { phrases: ["clear screen", "clear display"], action: () => clearDisplay() },
+    { phrases: ["bookmark this", "save verse"], action: () => bookmarkVerse() },
+    { phrases: ["open projector"], action: () => openProjectorWindow() },
+    { phrases: ["open lower third"], action: () => openLowerThirdWindow() },
+    { phrases: ["start listening"], action: () => startListening() },
+    { phrases: ["stop listening"], action: () => stopListening() }
+  ];
+  for (const cmd of commandPhrases) {
+    if (cmd.phrases.some(p => normalized.includes(p))) {
+      cmd.action();
+      return;
+    }
+  }
+
+  const semanticTriggers = [
+    { keywords: ["god", "is", "love"], ref: "1 John 4:8" },
+    { keywords: ["david", "defeats", "goliath"], ref: "1 Samuel 17:50" },
+    { keywords: ["fruit", "of", "the", "spirit"], ref: "Galatians 5:22-23" },
+    { keywords: ["beatitudes"], ref: "Matthew 5:3-12" },
+    { keywords: ["the", "lord", "is", "my", "shepherd"], ref: "Psalm 23:1" },
+    { keywords: ["jesus", "wept"], ref: "John 11:35" },
+    { keywords: ["god", "so", "loved", "the", "world"], ref: "John 3:16" },
+    { keywords: ["walk", "on", "water"], ref: "Matthew 14:29" },
+    { keywords: ["armor", "of", "god"], ref: "Ephesians 6:11-17" },
+    { keywords: ["faith", "without", "works"], ref: "James 2:26" },
+    { keywords: ["all", "things", "work", "together"], ref: "Romans 8:28" },
+    { keywords: ["love", "is", "patient", "kind"], ref: "1 Corinthians 13:4-7" },
+    { keywords: ["in", "the", "beginning"], ref: "Genesis 1:1" },
+    { keywords: ["let", "there", "be", "light"], ref: "Genesis 1:3" },
+    { keywords: ["no", "weapon", "formed"], ref: "Isaiah 54:17" },
+    { keywords: ["if", "my", "people", "who", "are", "called"], ref: "2 Chronicles 7:14" },
+    { keywords: ["i", "can", "do", "all", "things"], ref: "Philippians 4:13" }
+  ];
+
+  const words = normalized.split(/\s+/);
+  for (const entry of semanticTriggers) {
+    if (entry.keywords.every(k => words.includes(k))) {
+      fetchVerse(entry.ref, true);
+      return;
+    }
+  }
+
+  const bookMap = {
+    "genesis": "Genesis", "exodus": "Exodus", "leviticus": "Leviticus", "numbers": "Numbers", "deuteronomy": "Deuteronomy",
+    "john": "John", "1 john": "1 John", "first john": "1 John", "2 john": "2 John", "second john": "2 John", "3 john": "3 John",
+    "romans": "Romans", "rom": "Romans", "1 peter": "1 Peter", "first peter": "1 Peter", "2 peter": "2 Peter",
+    "1 corinthians": "1 Corinthians", "2 corinthians": "2 Corinthians", "psalms": "Psalms", "psalm": "Psalms"
+  };
+
+  function resolveBookName(input) {
+    for (const key in bookMap) {
+      if (input.includes(key)) {
+        return input.replace(key, bookMap[key]);
+      }
+    }
+    return input;
+  }
+
+  let processed = resolveBookName(normalized);
+
+  const flexPattern = /(?:read|show|display|go to|pull up|let(?:'|')s go to)?\s*([a-zA-Z ]+?)\s*(?:chapter\s*)?(\d{1,3})(?:\s*(?:verse|verses)?\s*(\d{1,3})(?:\s*(?:to|through|-)\s*(\d{1,3}))?)?(?:\s+(kjv|web|asv))?/gi;
+
+  let found = false;
+  let match;
+  while ((match = flexPattern.exec(processed)) !== null) {
+    const book = match[1].replace(/\s+/g, ' ').trim();
+    const chapter = match[2];
+    const startVerse = match[3];
+    const endVerse = match[4];
+    const version = match[5] ? match[5].toLowerCase() : null;
+
+    let ref = `${book} ${chapter}`;
+    if (startVerse && endVerse) {
+      ref += `:${startVerse}-${endVerse}`;
+    } else if (startVerse) {
+      ref += `:${startVerse}`;
+    }
+
+    fetchVerse(ref, true, version);
+    found = true;
+  }
+
+  if (!found) {
+    verseOutputEl.textContent = 'No valid verse detected.';
+  }
+}
+
+// Called when dropdown changes
+function refetchCurrentVerse() {
+  if (currentRef) {
+    fetchVerse(currentRef, false);
+  } else {
+    updateVerseDisplay('No verse reference available. Please detect a verse first.');
+  }
+}
+
+
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+}
+
+
+const bookmarkedVersesEl = document.getElementById('bookmarked-verses');
+
+function bookmarkVerse() {
+  if (currentRef && currentVerse) {
+    if (!bookmarks.includes(currentRef)) {
+      bookmarks.push(currentRef);
+      updateBookmarks();
+      console.log(`Bookmarked: ${currentRef}`);
+    } else {
+      console.log(`Verse ${currentRef} is already bookmarked`);
+    }
+  } else {
+    console.log('No verse to bookmark');
+  }
+}
+
+function updateBookmarks() {
+  bookmarkedVersesEl.innerHTML = '';
+  if (bookmarks.length === 0) {
+    bookmarkedVersesEl.innerHTML = '<div class="history-item">No bookmarks yet</div>';
+    return;
+  }
+  
+  bookmarks.slice().reverse().forEach(ref => {
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.textContent = ref;
+    div.style.cursor = 'pointer';
+    div.title = 'Click to load this verse';
+    div.onclick = () => {
+
+      let parts = ref.split(" ");
+      let book = parts.slice(0, parts.length - 1).join(" ");  
+      let chapterVerse = parts[parts.length - 1].split(":");
+      let chapter = chapterVerse[0];
+      let verseNumber = chapterVerse[1];
+
+      userInput.verse = verseNumber;
+      userInput.book = book;
+      userInput.chapter = chapter;
+
+      fetchVerse(ref, false);
+    };
+    bookmarkedVersesEl.appendChild(div);
+  });
+}
+
+
+function playVerse() {
+  if (!currentVerse) return;
+  const utterance = new SpeechSynthesisUtterance(currentVerse);
+  utterance.rate = 0.95;
+  utterance.pitch = 1;
+  utterance.lang = 'en-US';
+  speechSynthesis.speak(utterance);
+}
+
+
+function showTab(tab) {
+  document.getElementById('verse-history').style.display = (tab === 'history') ? 'block' : 'none';
+  document.getElementById('bookmarked-verses').style.display = (tab === 'bookmarks') ? 'block' : 'none';
+}
+
+</script>
+</body>
+</html>
