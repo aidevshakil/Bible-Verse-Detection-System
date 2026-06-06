@@ -1,7 +1,12 @@
 
 # Bible Verse Detection System
 
-This project is a Bible Verse Detection System built with Python. It provides an API and web interface to detect and retrieve Bible verses from user voice.
+A Python-based system that detects and retrieves Bible verses from user voice input. Provides a REST API and web interface supporting multiple Bible translations.
+
+**Author:** [aidevshakil](https://github.com/aidevshakil)  
+**Repository:** [https://github.com/aidevshakil/Bible-Verse-Detection-System](https://github.com/aidevshakil/Bible-Verse-Detection-System)
+
+---
 
 ## Project Structure
 
@@ -9,29 +14,31 @@ This project is a Bible Verse Detection System built with Python. It provides an
 app/
     api/                # API endpoints
     data/               # Data files (Bible books, versions)
-    models/             # Database models
-    schemas/            # Pydantic schemas (if used)
-    utils/              # Utility functions
+    schemas/            # Pydantic schemas
+    utils/              # Utility functions (LLM integration)
     config.py           # Configuration settings
     main.py             # Application entry point
 templates/
-    index.html          # Web interface template
-research/               # Research scripts and data
+    index.html          # Web interface
 requirements.txt        # Python dependencies
-.env                    # Environment variables
+setup.py                # Package setup
+.env                    # Environment variables (not committed)
 ```
 
 ## Setup
 
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/marziasu/Bible-Verse-Detection-System.git
+   git clone https://github.com/aidevshakil/Bible-Verse-Detection-System.git
    cd Bible-Verse-Detection-System
    ```
 
 2. **Create a virtual environment and activate it:**
    ```sh
-   python3 -m venv .venv
+   python -m venv .venv
+   # Windows
+   .venv\Scripts\activate
+   # macOS/Linux
    source .venv/bin/activate
    ```
 
@@ -41,7 +48,7 @@ requirements.txt        # Python dependencies
    ```
 
 4. **Set up environment variables:**
-   - Create `.env` and update as needed.
+   - Copy `.env.example` to `.env` and fill in the required values.
 
 5. **Run the application:**
    ```sh
@@ -50,18 +57,19 @@ requirements.txt        # Python dependencies
 
 ## Features
 
-- Detects Bible verses from voice input.
-- Provides API endpoints for integration.
-- Web interface for user interaction.
-- Supports multiple Bible versions.
+- Detects Bible verses from voice input using LLM integration.
+- REST API endpoints for programmatic access.
+- Web interface for interactive use.
+- Supports multiple Bible translations/versions.
+- Navigate to next/previous verses in context.
 
 ## API Endpoints
 
 ### `POST /get-verse/`
 
-Retrieves a Bible verse based on user input.
+Retrieves a Bible verse based on user input text.
 
-**Request Body:**  
+**Request — fetch a specific verse:**
 ```json
 {
   "translation": "",
@@ -74,7 +82,7 @@ Retrieves a Bible verse based on user input.
 }
 ```
 
-**Response:**  
+**Response:**
 ```json
 {
   "book": "John",
@@ -87,6 +95,7 @@ Retrieves a Bible verse based on user input.
 }
 ```
 
+**Request — navigate to next verse:**
 ```json
 {
   "translation": "KJV",
@@ -99,7 +108,7 @@ Retrieves a Bible verse based on user input.
 }
 ```
 
-**Response:**  
+**Response:**
 ```json
 {
   "book": "John",
@@ -108,15 +117,20 @@ Retrieves a Bible verse based on user input.
   "translation_id": "de4e12af7f28f599-01",
   "chapter": "12",
   "verse": "3",
-  "content": "(JOHN-12:3) Then took Mary a pound of ointment of spikenard, very costly, and anointed the feet of Jesus, and wiped his feet with her hair: and the house was filled with the odour of the ointment. "
+  "content": "(JOHN-12:3) Then took Mary a pound of ointment of spikenard, very costly, and anointed the feet of Jesus, and wiped his feet with her hair: and the house was filled with the odour of the ointment."
 }
 ```
 
 ## File Descriptions
 
-- [`app/main.py`](app/main.py): Main entry point for the application.
-- [`app/config.py`](app/config.py): Configuration settings.
-- [`app/models/`](app/models/): Database models, including [`app/models/bible.py`](app/models/bible.py) and [`app/models/database.py`](app/models/database.py).
-- [`app/data/`](app/data/): Contains Bible books and versions data.
-- [`templates/index.html`](templates/index.html): Web interface template.
+- [app/main.py](app/main.py) — Application entry point.
+- [app/config.py](app/config.py) — Configuration settings.
+- [app/api/](app/api/) — Versioned API route definitions.
+- [app/schemas/bible_schema.py](app/schemas/bible_schema.py) — Pydantic request/response schemas.
+- [app/utils/llms.py](app/utils/llms.py) — LLM integration for verse detection.
+- [app/data/](app/data/) — Bible book names and version data files.
+- [templates/index.html](templates/index.html) — Web interface template.
 
+## License
+
+This project is open source. See the repository for details.
